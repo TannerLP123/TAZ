@@ -1,0 +1,15 @@
+import React, { useState } from 'react';
+import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import { canConfirmCancellation } from './cancellation.mjs';
+export default function CancelAppointment({ identity, appointment, onCancel, onConfirm }) {
+  const [fields, setFields] = useState({ ...identity, reason: '' });
+  const valid = canConfirmCancellation(fields);
+  const update = (key, value) => setFields(prev => ({ ...prev, [key]: value }));
+  return <View><Text style={s.eyebrow}>APPOINTMENT CANCELLATION</Text><Text accessibilityRole="header" style={s.title}>Cancel appointment</Text><Text style={s.summary}>{appointment.customer} · {appointment.service}</Text><Text style={s.note}>Name and role are filled from the selected demo user. All fields are required.</Text>
+    <Text style={s.label}>Name *</Text><TextInput accessibilityLabel="Name" aria-required={true} value={fields.name} onChangeText={v => update('name', v)} style={s.input} autoCapitalize="words" maxLength={100} />
+    <Text style={s.label}>Role *</Text><TextInput accessibilityLabel="Role" aria-required={true} value={fields.role} onChangeText={v => update('role', v)} style={s.input} maxLength={100} />
+    <Text style={s.label}>Reason for Canceling: *</Text><TextInput accessibilityLabel="Reason for Canceling:" aria-required={true} value={fields.reason} onChangeText={v => update('reason', v)} multiline textAlignVertical="top" style={[s.input, s.reason]} maxLength={1000} placeholder="Why is this appointment being canceled?" />
+    <Text style={s.note}>Confirming removes this appointment from the active schedule and keeps the cancellation details for this session.</Text><View style={s.actions}><Pressable accessibilityRole="button" onPress={onCancel} style={[s.button, s.secondary]}><Text style={s.secondaryText}>Cancel</Text></Pressable><Pressable accessibilityRole="button" accessibilityState={{ disabled: !valid }} disabled={!valid} onPress={() => { if (canConfirmCancellation(fields)) onConfirm(Object.fromEntries(Object.entries(fields).map(([key,value])=>[key,value.trim()]))); }} style={[s.button, s.confirm, !valid && s.disabled]}><Text style={s.confirmText}>Confirm</Text></Pressable></View>
+  </View>;
+}
+const s=StyleSheet.create({eyebrow:{color:'#7B887C',fontSize:10,letterSpacing:1.3},title:{color:'#243F35',fontSize:27,fontWeight:'600',marginTop:12},summary:{color:'#243F35',fontSize:14,marginTop:16},note:{color:'#7B887C',fontSize:12,lineHeight:19,marginTop:15},label:{color:'#243F35',fontSize:13,marginTop:22,marginBottom:9},input:{borderWidth:1,borderColor:'#DDE5D4',borderRadius:8,padding:13,fontSize:16,color:'#243F35'},reason:{minHeight:120},actions:{flexDirection:'row',gap:12,marginTop:25},button:{flex:1,minHeight:48,alignItems:'center',justifyContent:'center',borderRadius:8},secondary:{borderWidth:1,borderColor:'#DDE5D4'},secondaryText:{color:'#243F35',fontWeight:'600'},confirm:{backgroundColor:'#9C463B'},confirmText:{color:'#FFF',fontWeight:'600'},disabled:{opacity:.4}});

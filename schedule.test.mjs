@@ -22,3 +22,5 @@ test('booking validation checks conflicts, scope, bounds and required fields',as
  assert.match(validateBooking({...draft,email:'bad'},appointments,'owner','ava'),/email/);
  assert.equal(validateBooking({...appointments[0]},appointments,'owner','ava'),'');
 });
+test('cancellation requires all three non-whitespace fields',async()=>{const {canConfirmCancellation}=await import('./src/cancellation.mjs');const valid={name:'Ava',role:'Professional',reason:'Customer requested'};assert.equal(canConfirmCancellation(valid),true);for(const key of ['name','role','reason']){assert.equal(canConfirmCancellation({...valid,[key]:'   '}),false);assert.equal(canConfirmCancellation({...valid,[key]:undefined}),false);}});
+test('cancellation identity follows the demo session instead of the appointment professional',async()=>{const {demoIdentity}=await import('./src/cancellation.mjs');assert.deepEqual(demoIdentity('professional','nina'),{name:'Nina Park',role:'Professional'});assert.deepEqual(demoIdentity('owner','nina'),{name:'Morgan Ellis',role:'Owner'});assert.deepEqual(demoIdentity('receptionist','ava'),{name:'Jamie Brooks',role:'Receptionist'});});

@@ -81,3 +81,47 @@ test('empty slot preselects time and cancellation saves nothing', async ({page})
   await page.getByRole('button',{name:'Cancel appointment changes'}).click();
   await expect(page.getByRole('button',{name:/Not saved,/})).toHaveCount(0);
 });
+for (const [role, name] of [['Owner','Morgan Ellis'],['Receptionist','Jamie Brooks'],['Professional','Ava Bennett']]) {
+  test(`${role} cancellation prefills identity and requires every field`, async ({page},testInfo)=>{
+    await page.goto('/');
+    await page.getByRole('button',{name:role,exact:true}).click();
+    const appointment=page.getByRole('button',{name:/Olivia Martin, Cut & style/});
+    await appointment.click();
+    await page.getByRole('button',{name:'Cancel appointment',exact:true}).click();
+    const nameField=page.getByRole('textbox',{name:'Name',exact:true});
+    const roleField=page.getByRole('textbox',{name:'Role',exact:true});
+    const reason=page.getByRole('textbox',{name:'Reason for Canceling:',exact:true});
+    const confirm=page.getByRole('button',{name:'Confirm',exact:true});
+    await expect(nameField).toHaveValue(name);
+    await expect(roleField).toHaveValue(role);
+    await expect(confirm).toBeDisabled();
+    await reason.fill('   ');
+    await expect(confirm).toBeDisabled();
+    await reason.fill('Customer requested a different day.');
+    await expect(confirm).toBeEnabled();
+    for (const [field,value] of [[nameField,name],[roleField,role]]) {
+      await field.fill(' ');
+      await expect(confirm).toBeDisabled();
+      await field.fill(value);
+      await expect(confirm).toBeEnabled();
+    }
+    await page.screenshot({path:testInfo.outputPath('cancel-appointment.png'),fullPage:true,animations:'disabled'});
+    await page.getByRole('button',{name:'Cancel',exact:true}).click();
+    await expect(page.getByRole('button',{name:'Edit appointment',exact:true})).toBeVisible();
+    await page.getByRole('button',{name:'Close appointment',exact:true}).click();
+    await expect(appointment).toBeVisible();
+    await appointment.click();
+    await page.getByRole('button',{name:'Cancel appointment',exact:true}).click();
+    await expect(reason).toHaveValue('');
+    await reason.fill('Customer requested a different day.');
+    await confirm.click();
+    await expect(appointment).toHaveCount(0);
+    await expect(page.getByText('Appointment for Olivia Martin canceled.',{exact:true})).toBeVisible();
+    // The canceled booking must also release its time for a replacement.
+    await page.getByRole('button',{name:'Add appointment for Ava Bennett at 9:00 AM',exact:true}).click();
+    await page.getByRole('textbox',{name:'Customer name',exact:true}).fill('Replacement Customer');
+    await page.getByRole('textbox',{name:'Service',exact:true}).fill('Cut');
+    await page.getByRole('button',{name:'Save appointment',exact:true}).click();
+    await expect(page.getByRole('button',{name:/Replacement Customer, Cut,/})).toBeVisible();
+  });
+}
