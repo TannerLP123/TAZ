@@ -9,3 +9,16 @@ test('half hour appointments display valid times around noon',async()=>{const {f
 test('iPhone cannot check out even at landscape or expanded widths',async()=>{const {supportsCheckout}=await import('./src/device.mjs');assert.equal(supportsCheckout('ios',false,1200),false);assert.equal(supportsCheckout('ios',false,390),false);});
 test('iPad can check out in portrait and narrow multitasking views',async()=>{const {supportsCheckout}=await import('./src/device.mjs');assert.equal(supportsCheckout('ios',true,768),true);assert.equal(supportsCheckout('ios',true,600),true);});
 test('browser previews use width and other native devices cannot check out',async()=>{const {supportsCheckout}=await import('./src/device.mjs');assert.equal(supportsCheckout('web',false,1180),true);assert.equal(supportsCheckout('web',false,390),false);assert.equal(supportsCheckout('android',false,1180),false);});
+test('booking validation checks conflicts, scope, bounds and required fields',async()=>{
+ const {validateBooking}=await import('./src/booking.mjs');
+ const draft={staff:'ava',start:10,duration:1,customer:'Taylor',email:'',service:'Cut',price:30};
+ const {appointments}=await import('./src/schedule.mjs');
+ assert.equal(validateBooking(draft,appointments,'professional','ava'),'');
+ assert.match(validateBooking({...draft,start:9.5},appointments,'owner','ava'),/already has/);
+ assert.match(validateBooking({...draft,staff:'marcus'},appointments,'professional','ava'),/Choose a professional/);
+ assert.match(validateBooking({...draft,start:16.5},appointments,'owner','ava'),/9 AM and 5 PM/);
+ assert.match(validateBooking({...draft,price:NaN},appointments,'owner','ava'),/price/);
+ assert.match(validateBooking({...draft,customer:''},appointments,'owner','ava'),/required/);
+ assert.match(validateBooking({...draft,email:'bad'},appointments,'owner','ava'),/email/);
+ assert.equal(validateBooking({...appointments[0]},appointments,'owner','ava'),'');
+});

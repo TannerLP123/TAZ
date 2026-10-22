@@ -54,7 +54,10 @@ PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:ui
 - Owner view: all professionals, including those off duty.
 - Receptionist view: only professionals working today.
 - Professional view: only that professional's appointments.
-- Tap an appointment to view its customer, service, price, and professional.
+- Home screen shows appointment and working-professional counts, without a scheduled-services dollar total.
+- Every role can add appointments using Add appointment or by tapping an empty half-hour slot. The editor prefills the professional and time for slot bookings, and validates required details, prices, schedule bounds, and overlapping appointments. Professionals can book only themselves; other roles can book staff visible in their schedule view.
+- Tap an appointment for an action popup with Edit appointment and Checkout. Checkout is disabled on iPhone. Completed demo appointments cannot be edited.
+- Add and edit customer name, optional email, service, price, professional, time, and duration. Changes update the schedule immediately.
 - iPad only: demo checkout with optional tip and total calculation.
 - iPhone: appointment viewing only, with no tip entry or checkout action. Native iOS uses device type, so rotating an iPhone cannot enable checkout. Web previews use screen width to simulate these experiences.
 
@@ -62,6 +65,6 @@ PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:ui
 
 The iPad will connect to a PAX A35 credit card terminal using a configured static IP address. This is a future feature, not implemented or connected yet. Terminal configuration, the supported processor/PAX integration, and on-device network testing will be addressed when that work starts. The iPhone will not take payments.
 
-Appointments and customer information are fictional. Checkout completion and tips stay in memory and reset on reload. The role switcher demonstrates visibility, not authentication or secure authorization. No real payments, persistent appointments, staff management, customizable permissions, or professional payouts exist yet. Empty time slots do not create appointments.
+Initial appointments and customer information are fictional. New appointments, edits, checkout completion, and tips stay in memory and reset on reload. The role switcher demonstrates visibility, not authentication or secure authorization. No real payments, persistent appointments, staff management, customizable permissions, or professional payouts exist yet. Tap an empty slot to open the appointment editor; an appointment is created only after Save appointment.
 
 The original browser prototype is retained in `legacy/` and `server.mjs`; run `npm run legacy:web` to use it. `src/schedule.mjs` supplies the sample data and visibility logic shared by both versions. The default app is now Expo.
