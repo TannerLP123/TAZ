@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "TAZ",
+    "slug": "taz",
+    "version": "0.1.0",
+    "orientation": "default",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true
+    },
+    "web": {
+      "bundler": "metro",
+      "name": "TAZ"
+    },
+    "plugins": [
+      "expo-status-bar"
+    ]
+  }
+}

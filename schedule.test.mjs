@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {visibleStaff,staff,total} from './src/schedule.mjs';
+test('owner sees off duty professionals',()=>assert.deepEqual(visibleStaff('owner','ava'),staff));
+test('receptionist sees only working staff',()=>{const result=visibleStaff('receptionist');assert.equal(result.length,3);assert.ok(result.every(s=>s.working));});
+test('professionals see only their own schedule, including off duty',()=>assert.deepEqual(visibleStaff('professional','jules').map(s=>s.id),['jules']));
+test('checkout includes tip with currency rounding',()=>assert.equal(total(75,12.35),87.35));
+test('half hour appointments display valid times around noon',async()=>{const {formatTime}=await import('./src/schedule.mjs');assert.equal(formatTime(9.5),'9:30 AM');assert.equal(formatTime(12.5),'12:30 PM');assert.equal(formatTime(14.5),'2:30 PM');});
+test('iPhone cannot check out even at landscape or expanded widths',async()=>{const {supportsCheckout}=await import('./src/device.mjs');assert.equal(supportsCheckout('ios',false,1200),false);assert.equal(supportsCheckout('ios',false,390),false);});
+test('iPad can check out in portrait and narrow multitasking views',async()=>{const {supportsCheckout}=await import('./src/device.mjs');assert.equal(supportsCheckout('ios',true,768),true);assert.equal(supportsCheckout('ios',true,600),true);});
+test('browser previews use width and other native devices cannot check out',async()=>{const {supportsCheckout}=await import('./src/device.mjs');assert.equal(supportsCheckout('web',false,1180),true);assert.equal(supportsCheckout('web',false,390),false);assert.equal(supportsCheckout('android',false,1180),false);});

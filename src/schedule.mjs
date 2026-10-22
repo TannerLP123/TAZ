@@ -1,0 +1,9 @@
+export const staff=[{id:'ava',name:'Ava Bennett',initials:'AB',specialty:'Hair stylist',working:true},{id:'marcus',name:'Marcus Reed',initials:'MR',specialty:'Tattoo artist',working:true},{id:'nina',name:'Nina Park',initials:'NP',specialty:'Nail artist',working:true},{id:'jules',name:'Jules Rivera',initials:'JR',specialty:'Hair stylist',working:false}];
+export const appointments=[{id:1,staff:'ava',start:9,duration:1,customer:'Olivia Martin',email:'olivia@example.com',service:'Cut & style',price:75},{id:2,staff:'marcus',start:9.5,duration:2,customer:'Noah Williams',email:'noah@example.com',service:'Custom tattoo',price:240},{id:3,staff:'nina',start:10,duration:1,customer:'Emma Davis',email:'emma@example.com',service:'Gel manicure',price:55},{id:4,staff:'ava',start:11,duration:1.5,customer:'Sophia Chen',email:'sophia@example.com',service:'Color & finish',price:145},{id:5,staff:'nina',start:12,duration:1,customer:'Mia Thompson',email:'mia@example.com',service:'Signature pedicure',price:65},{id:6,staff:'marcus',start:13,duration:1.5,customer:'Liam Anderson',email:'liam@example.com',service:'Tattoo touch-up',price:120},{id:7,staff:'ava',start:14,duration:1,customer:'Isabella Wilson',email:'isabella@example.com',service:'Cut & style',price:75},{id:8,staff:'nina',start:14.5,duration:1,customer:'Charlotte Lee',email:'charlotte@example.com',service:'Nail art & gel',price:85}];
+export function visibleStaff(role,professional){return staff.filter(s=>role==='owner'||(role==='receptionist'?s.working:s.id===professional));}
+export function total(price,tip){return Math.round((price+tip)*100)/100;}
+export function formatTime(hour) {
+  const minutes = Math.round(hour * 60);
+  const wholeHour = Math.floor(minutes / 60);
+  return `${wholeHour % 12 || 12}:${String(minutes % 60).padStart(2, '0')} ${wholeHour >= 12 ? 'PM' : 'AM'}`;
+}
